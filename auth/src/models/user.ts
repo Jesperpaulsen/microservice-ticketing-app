@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, model, Document } from 'mongoose';
 import { Password } from '../services/password';
 
 interface userAttrs {
@@ -6,7 +6,7 @@ interface userAttrs {
   password: string;
 }
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   email: {
     type: String,
     required: true
@@ -15,16 +15,26 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   }
-})
+});
+
+// Was unable to do this in the constructor of the Schema
+userSchema.set('toJSON', {
+  transform(doc: any, ret: any) {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.password;
+  },
+  versionKey: false,
+});
 
 userSchema.pre('save', async function() {
   if (this.isModified('password')) {
     const hashed = await Password.toHash(this.get('password'));
     this.set('password', hashed);
   }
-})
+});
 
-const UserModel = mongoose.model<mongoose.Document & userAttrs>('User', userSchema);
+const UserModel = model<Document & userAttrs>('User', userSchema);
 
 class User extends UserModel {
   constructor(attrs: userAttrs) {

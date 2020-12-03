@@ -15,16 +15,15 @@ const userSchema = new Schema({
     type: String,
     required: true
   }
-});
-
-// Was unable to do this in the constructor of the Schema
-userSchema.set('toJSON', {
-  transform(doc: any, ret: any) {
-    ret.id = ret._id;
-    delete ret._id;
-    delete ret.password;
-  },
-  versionKey: false,
+}, {
+  toJSON: {
+    transform(_, ret) {
+      ret.id = ret._id;
+      delete ret._id;
+      delete ret.password;
+    },
+    versionKey: false,
+  }
 });
 
 userSchema.pre('save', async function() {

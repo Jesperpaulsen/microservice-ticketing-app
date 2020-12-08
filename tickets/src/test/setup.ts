@@ -5,7 +5,7 @@ import { signIn } from "@jgptickets/common";
 declare global {
   namespace NodeJS {
     interface Global {
-      signIn(): string[];
+      signIn(id?: string): string[];
     }
   }
 }

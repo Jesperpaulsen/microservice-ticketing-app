@@ -1,10 +1,14 @@
+import mongoose from "mongoose";
+
 import { Ticket } from "../models/ticket";
 
-export const createTicket = async (
-  title?: string,
-  userId?: string,
-  price?: number,
-) => {
+interface Params {
+  userId?: string;
+  title?: string;
+  price?: number;
+}
+
+export const createTicket = async ({ userId, title, price }: Params) => {
   const ticket = new Ticket({
     userId: userId || "user_id",
     title: title || "ticket_title",
@@ -13,3 +17,5 @@ export const createTicket = async (
   await ticket.save();
   return ticket;
 };
+
+export const getRandomId = () => new mongoose.Types.ObjectId().toHexString();

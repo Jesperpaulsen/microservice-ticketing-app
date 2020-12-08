@@ -4,9 +4,9 @@ import { Ticket } from "../../models/ticket";
 import { createTicket } from "../../test/utils";
 
 it("can fetch a list of tickets", async () => {
-  createTicket();
-  createTicket();
-  createTicket();
+  createTicket({});
+  createTicket({});
+  createTicket({});
 
   const response = await request(app).get("/api/tickets").send().expect(200);
 

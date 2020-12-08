@@ -1,15 +1,15 @@
-import request from 'supertest';
-import { app } from '../app';
+import { Ticket } from "../models/ticket";
 
-export const signIn = async () => {
-  const email = 'test@test.com';
-  const password = 'password';
-
-  const response = await request(app)
-    .post('/api/users/signup')
-    .send({ email, password })
-    .expect(201);
-  
-  const cookie = response.get('Set-Cookie');
-  return cookie;
+export const createTicket = async (
+  title?: string,
+  userId?: string,
+  price?: number,
+) => {
+  const ticket = new Ticket({
+    userId: userId || "user_id",
+    title: title || "ticket_title",
+    price: price || 10.0,
+  });
+  await ticket.save();
+  return ticket;
 };

@@ -1,20 +1,19 @@
-import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { signIn } from '../test/utils';
-
+import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import { signIn } from "@jgptickets/common";
 
 declare global {
   namespace NodeJS {
     interface Global {
-      signIn(): Promise<string[]>;
+      signIn(): string[];
     }
   }
 }
 
-let mongo: MongoMemoryServer
+let mongo: MongoMemoryServer;
 
 beforeAll(async () => {
-  process.env.JWT_KEY = 'asdfasdf';
+  process.env.JWT_KEY = "asdfasdf";
 
   const mongo = new MongoMemoryServer();
   const mongo_uri = await mongo.getUri();
@@ -28,7 +27,7 @@ beforeAll(async () => {
 beforeEach(async () => {
   const collections = await mongoose.connection.db.collections();
 
-  for(const collection of collections) {
+  for (const collection of collections) {
     await collection.deleteMany({});
   }
 });

@@ -22,6 +22,13 @@ build:
       sync:
         infer:
           - "src/**/*.ts"
+    - image: jespergp/orders
+      context: orders
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "src/**/*.ts"
     - image: jespergp/client
       context: client
       docker:

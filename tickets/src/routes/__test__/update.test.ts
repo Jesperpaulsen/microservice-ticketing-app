@@ -1,7 +1,9 @@
-import request from "supertest";
-import { app } from "../../app";
-import { Ticket } from "../../models/ticket";
 import { createTicket, getRandomId } from "../../test/utils";
+
+import { Ticket } from "../../models/ticket";
+import { app } from "../../app";
+import { natsWrapper } from "../../nats-wrapper";
+import request from "supertest";
 
 it("returns a 404 if the provided id does not exist", async () => {
   const id = getRandomId();
@@ -69,4 +71,17 @@ it("updates the ticket provided valid inputs", async () => {
   const updatedTicket = await Ticket.findById(ticket.id);
   expect(updatedTicket?.title).toEqual("new title");
   expect(updatedTicket?.price).toEqual(140);
+});
+
+it("publishes an event", async () => {
+  const userId = "test_id";
+  const ticket = await createTicket({ userId });
+  const cookie = global.signIn(userId);
+  await request(app)
+    .put(`/api/tickets/${ticket.id}`)
+    .set("Cookie", cookie)
+    .send({ title: "new title", price: 140 })
+    .expect(200);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });

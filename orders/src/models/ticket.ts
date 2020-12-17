@@ -1,23 +1,21 @@
 import { Document, Schema, model } from "mongoose";
+import { Order, OrderStatus } from "./order";
 
-interface TicketAttrs {
-  userId: string;
-  expiresAt: Date;
+export interface TicketAttrs {
+  title: string;
+  price: number;
 }
 
 const ticketSchema = new Schema(
   {
-    userId: {
+    title: {
       type: String,
       required: true,
     },
-    expiresAt: {
-      type: Schema.Types.Date,
-      required: false,
-    },
-    ticket: {
-      type: Schema.Types.ObjectId,
-      ref: "Ticket",
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
     },
   },
   {
@@ -30,9 +28,23 @@ const ticketSchema = new Schema(
   },
 );
 
-const OrderModel = model<Document & TicketAttrs>("Ticket", ticketSchema);
+ticketSchema.methods.isReserved = async function () {
+  const existingOrder = await Order.findOne({
+    ticket: this,
+    status: {
+      $in: [
+        OrderStatus.CREATED,
+        OrderStatus.AWAITING_PAYMENT,
+        OrderStatus.COMPLETE,
+      ],
+    },
+  });
+  return !!existingOrder;
+};
 
-class Ticket extends OrderModel {
+const TicketModel = model<Document & TicketAttrs>("Ticket", ticketSchema);
+
+class Ticket extends TicketModel {
   constructor(attrs: TicketAttrs) {
     super(attrs);
   }

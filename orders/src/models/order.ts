@@ -1,12 +1,15 @@
 import { Document, Schema, model } from "mongoose";
 
 import { OrderStatus } from "@jgptickets/common";
+import { TicketAttrs } from "./ticket";
+
+export { OrderStatus };
 
 interface OrderAttrs {
   userId: string;
   status: OrderStatus;
   expiresAt: Date;
-  ticket: TicketDoc;
+  ticket: Document & TicketAttrs;
 }
 
 const orderSchema = new Schema(

@@ -1,9 +1,15 @@
-import mongoose, { Schema, model, Document } from "mongoose";
+import mongoose, { Document, Schema, model } from "mongoose";
+
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 interface ticketAttrs {
   title: string;
   price: number;
   userId: string;
+}
+
+interface ticketModel extends ticketAttrs {
+  version: number;
 }
 
 const ticketSchema = new Schema(
@@ -31,7 +37,10 @@ const ticketSchema = new Schema(
   },
 );
 
-const TicketModel = model<Document & ticketAttrs>("Ticket", ticketSchema);
+ticketSchema.set("versionKey", "version");
+ticketSchema.plugin(updateIfCurrentPlugin);
+
+const TicketModel = model<Document & ticketModel>("Ticket", ticketSchema);
 
 class Ticket extends TicketModel {
   constructor(attrs: ticketAttrs) {

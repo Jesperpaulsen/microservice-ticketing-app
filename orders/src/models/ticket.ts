@@ -1,9 +1,19 @@
 import { Document, Schema, model } from "mongoose";
 import { Order, OrderStatus } from "./order";
 
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
+
 export interface TicketAttrs {
+  id: string;
   title: string;
   price: number;
+}
+
+interface ticketModel extends TicketAttrs {
+  findByEvent(event: {
+    id: string;
+    version: number;
+  }): Promise<(Document & ticketModel) | null>;
 }
 
 const ticketSchema = new Schema(
@@ -28,6 +38,13 @@ const ticketSchema = new Schema(
   },
 );
 
+ticketSchema.set("versionKey", "version");
+ticketSchema.plugin(updateIfCurrentPlugin);
+
+ticketSchema.methods.findByEvent = (event: { id: string; version: number }) => {
+  return Ticket.findOne({ _id: event.id, version: event.version - 1 });
+};
+
 ticketSchema.methods.isReserved = async function () {
   const existingOrder = await Order.findOne({
     ticket: this,
@@ -42,11 +59,12 @@ ticketSchema.methods.isReserved = async function () {
   return !!existingOrder;
 };
 
-const TicketModel = model<Document & TicketAttrs>("Ticket", ticketSchema);
+const TicketModel = model<Document & ticketModel>("Ticket", ticketSchema);
 
 class Ticket extends TicketModel {
   constructor(attrs: TicketAttrs) {
-    super(attrs);
+    if (attrs) super({ _id: attrs.id, title: attrs.title, price: attrs.price });
+    else super();
   }
 }
 

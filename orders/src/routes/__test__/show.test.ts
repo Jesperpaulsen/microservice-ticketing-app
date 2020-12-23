@@ -1,9 +1,15 @@
+import { MongooseDocument, Types } from "mongoose";
+
 import { Ticket } from "../../models/ticket";
 import { app } from "../../app";
 import request from "supertest";
 
 it("fetches the order", async () => {
-  const ticket = new Ticket({ title: "Concert", price: 20 });
+  const ticket = new Ticket({
+    id: Types.ObjectId().toHexString(),
+    title: "Concert",
+    price: 20,
+  });
   await ticket.save();
 
   const user = global.signIn();
@@ -24,7 +30,11 @@ it("fetches the order", async () => {
 });
 
 it("returns 401 if a user tries to fetch another users ticket", async () => {
-  const ticket = new Ticket({ title: "Concert", price: 20 });
+  const ticket = new Ticket({
+    id: Types.ObjectId().toHexString(),
+    title: "Concert",
+    price: 20,
+  });
   await ticket.save();
 
   const user = global.signIn();

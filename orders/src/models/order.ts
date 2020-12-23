@@ -12,6 +12,10 @@ interface OrderAttrs {
   ticket: Document & TicketAttrs;
 }
 
+interface orderModel extends OrderAttrs {
+  version: number;
+}
+
 const orderSchema = new Schema(
   {
     userId: {
@@ -43,7 +47,7 @@ const orderSchema = new Schema(
   },
 );
 
-const OrderModel = model<Document & OrderAttrs>("Order", orderSchema);
+const OrderModel = model<Document & orderModel>("Order", orderSchema);
 
 class Order extends OrderModel {
   constructor(attrs: OrderAttrs) {

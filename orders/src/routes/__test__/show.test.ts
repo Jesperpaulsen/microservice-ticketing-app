@@ -1,6 +1,5 @@
-import { MongooseDocument, Types } from "mongoose";
-
 import { Ticket } from "../../models/ticket";
+import { Types } from "mongoose";
 import { app } from "../../app";
 import request from "supertest";
 
@@ -36,8 +35,6 @@ it("returns 401 if a user tries to fetch another users ticket", async () => {
     price: 20,
   });
   await ticket.save();
-
-  const user = global.signIn();
 
   const { body: order } = await request(app)
     .post("/api/orders")

@@ -8,8 +8,9 @@ interface ticketAttrs {
   userId: string;
 }
 
-interface ticketModel extends ticketAttrs {
+interface ticketModel {
   version: number;
+  orderId: string;
 }
 
 const ticketSchema = new Schema(
@@ -26,6 +27,10 @@ const ticketSchema = new Schema(
       type: String,
       required: true,
     },
+    orderId: {
+      type: String,
+      required: false,
+    },
   },
   {
     toJSON: {
@@ -40,7 +45,10 @@ const ticketSchema = new Schema(
 ticketSchema.set("versionKey", "version");
 ticketSchema.plugin(updateIfCurrentPlugin);
 
-const TicketModel = model<Document & ticketModel>("Ticket", ticketSchema);
+const TicketModel = model<Document & ticketAttrs & ticketModel>(
+  "Ticket",
+  ticketSchema,
+);
 
 class Ticket extends TicketModel {
   constructor(attrs: ticketAttrs) {

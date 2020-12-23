@@ -2,6 +2,7 @@ import { Document, Schema, model } from "mongoose";
 
 import { OrderStatus } from "@jgptickets/common";
 import { TicketAttrs } from "./ticket";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 export { OrderStatus };
 
@@ -46,6 +47,9 @@ const orderSchema = new Schema(
     },
   },
 );
+
+orderSchema.set("versionKey", "version");
+orderSchema.plugin(updateIfCurrentPlugin);
 
 const OrderModel = model<Document & orderModel>("Order", orderSchema);
 

@@ -29,6 +29,13 @@ build:
       sync:
         infer:
           - "src/**/*.ts"
+    - image: jespergp/expiration
+      context: expiration
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "src/**/*.ts"
     - image: jespergp/client
       context: client
       docker:

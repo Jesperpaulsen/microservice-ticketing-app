@@ -36,6 +36,13 @@ build:
       sync:
         infer:
           - "src/**/*.ts"
+    - image: jespergp/payments
+      context: payments
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer:
+          - "src/**/*.ts"
     - image: jespergp/client
       context: client
       docker:
